@@ -1,0 +1,27 @@
+{% extends 'Basic.html'%}
+{% block title%} {%endblock%}
+{%block content%}
+<div class="page-area d-flex justify-content-center align-items-center vh-100">
+{%for i in B %}
+<div class="card shadow-lg" style="width: 22rem;">
+
+    <div class="card-header bg-primary text-white text-center">
+        Borrow Request
+    </div>
+
+    <div class="card-body">
+
+        <h5 class="card-title">Name: {{i.Name}}</h5>
+        <p class="card-text"><strong>Email:</strong> {{i.Email}}</p>
+        <p class="card-text"><strong>Address:</strong> {{i.Address}}</p>
+        <p class="card-text"><strong>Book:</strong> {{i.Book}}</p>
+
+
+
+    </div>
+
+</div>
+{%endfor%}
+</div>
+
+{%endblock%}

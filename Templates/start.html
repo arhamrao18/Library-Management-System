@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Library</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+        }
+        .overlay {
+            background: rgba(0,0,0,0.6);
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            color: #fff;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            min-height: 80px;
+            margin-bottom: 40px;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .btn-custom {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 8px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Admin button top-right corner */
+        .admin-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        /* Member button bottom-center */
+        .member-btn-container {
+            position: absolute;
+            bottom: 40px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay">
+        <h1 id="animatedHeading">Welcome to our library</h1>
+
+
+        <a href="manager/" class="btn btn-danger btn-custom admin-btn">Admin</a>
+
+
+        <div class="member-btn-container">
+            <a href="member/" class="btn btn-primary btn-custom">Member</a>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS & dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Heading Animation Script -->
+    <script>
+        const messages = [
+            "Welcome to our library",
+            "We provide books to readers"
+        ];
+
+        let index = 0;
+        const heading = document.getElementById('animatedHeading');
+
+        function changeMessage() {
+            heading.style.opacity = 0;
+            setTimeout(() => {
+                heading.textContent = messages[index];
+                heading.style.opacity = 1;
+                index = (index + 1) % messages.length;
+            }, 500);
+        }
+
+        setInterval(changeMessage, 3000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+{% extends 'Basic.html'%}
+{% block title%} {%endblock%}
+{%block extra_css%}
+<style>
+ .home-page {
+      background-color: #fff; /* White body */
+      color: #212529; /* Default dark text */
+    }
+    .card-dark {
+      background-color: #1e1e1e;
+      color: #fff;
+      transition: transform 0.3s, box-shadow 0.3s;
+      border: none;
+      overflow: hidden;
+    }
+
+    .card-dark:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    }
+
+    .card-img-top {
+      max-height: 200px;
+      object-fit: contain;
+      display: block;
+      margin: 15px auto;
+    }
+
+    .carousel-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.4);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card-dark:hover .carousel-overlay {
+      opacity: 1;
+    }
+ </style>
+{%endblock%}
+{% block body_class %}
+home-page
+{%endblock%}
+{%block content%}
+<div class="container my-5">
+    <div class="row g-4">
+        {% for i in Book %}
+    <div class="col-md-4">
+      <div class="card card-dark position-relative">
+        <div class="carousel-overlay"></div>
+        <img src="{{i.image.url}}" class="card-img-top" alt="Book Image">
+        <div class="card-body">
+          <h5 class="card-title">{{i.title}}</h5>
+          <p class="card-text"><strong>Author:</strong> {{i.Author}}</p>
+            <p class="card-text"><strong>Publish Date:</strong>{{i.p_date}}</p>
+          <p class="card-text"><strong>Description:</strong>{{i.Description}}</p>
+            <p class="card-text"><strong>Category:</strong>{{i.Category}}</p>
+          <p class="card-text"><strong>Quantity:</strong>{{i.Quantity}}</p>
+        </div>
+      </div>
+    </div>
+
+ {%endfor%}
+    </div>
+
+</div>
+{%endblock%}

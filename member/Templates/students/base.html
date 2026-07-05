@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Navbar</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+{%block extra_css %}
+{%endblock%}
+
+    <style>
+
+.navbar{
+background:#0d6efd;
+}
+
+.navbar-brand{
+font-weight:bold;
+color:white !important;
+}
+
+.nav-link{
+color:white !important;
+margin-right:15px;
+transition:0.3s;
+}
+
+.nav-link:hover{
+color:#ffd700 !important;
+}
+
+.search-box{
+width:250px;
+}
+
+</style>
+
+</head>
+<body class="{%  block body_class %}{%endblock%}">
+
+
+<nav class="navbar navbar-expand-sm shadow">
+<div class="container">
+
+<a class="navbar-brand" href="{% url 'Menue' %}">Library</a>
+
+<button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+<span class="navbar-toggler-icon"></span>
+</button>
+
+<div class="collapse navbar-collapse" id="navbarNav">
+
+<ul class="navbar-nav ms-auto align-items-center">
+
+<li class="nav-item">
+<a class="nav-link" href="{% url 'Request' %}">Borrow Request</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="{% url 'Profile' %}">
+<i class="bi bi-person-circle"></i> Profile
+</a>
+</li>
+
+<li class="nav-item">
+<form class="d-flex ms-3" method="GET" action="{{request.path}}">
+<input class="form-control me-2 search-box" name="q" type="search" placeholder="Search books" value="{{request.GET.q|default:''}}">
+<button class="btn btn-warning" type="submit">
+Search
+</button>
+</form>
+</li>
+
+</ul>
+
+</div>
+
+</div>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{%block content%}
+{%endblock%}
+</body>
+</html>

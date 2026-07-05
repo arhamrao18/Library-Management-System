@@ -1,0 +1,49 @@
+{% extends 'Basic.html'%}
+{% block title%} {%endblock%}
+{%block content%}
+<body class="bg-light">
+
+<div class="container mt-5">
+  <div class="card shadow-sm p-4 mx-auto" style="max-width: 500px;">
+    <h3 class="text-center mb-4">Add Book</h3>
+    <form method="POST" >
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label for="title" class="form-label">Tittle</label>
+        <input type="text" class="form-control" id="title" name="tittle" placeholder="Enter book title" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="author" class="form-label">Author</label>
+        <input type="text" class="form-control" id="author" name="Author" placeholder="Enter author's name" required>
+      </div>
+        <div class="mb-3">
+        <label for="Quantity" class="form-label">Quantity</label>
+        <input type="text" class="form-control" id="Quantity" name="quantity" placeholder="Enter Quantity" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="publish_date" class="form-label">Publish Date</label>
+        <input type="date" class="form-control" id="publish_date" name="publish_date" required>
+      </div>
+      <div class="mb-3">
+        <label for="Desc" class="form-label">Description</label>
+        <input type="text" class="form-control" id="Desc" name="Desc" required>
+      </div>
+        <div class="mb-3">
+        <label for="category" class="form-label">Category</label>
+        <input type="text" class="form-control" id="category" name="category" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="image" class="form-label">Book Image</label>
+        <input type="file" class="form-control" id="image" name="image">
+      </div>
+
+      <button type="submit" class="btn btn-success w-100">Save Book</button>
+    </form>
+  </div>
+</div>
+</body>
+{%endblock%}

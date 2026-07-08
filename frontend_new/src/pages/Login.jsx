@@ -23,7 +23,8 @@ export default function Login() {
 
       const res = await axios.post(base + 'login/', { username, password })
 
-      localStorage.setItem('authToken', res.data.token)
+      localStorage.setItem('accessToken', res.data.access)
+      localStorage.setItem('refreshToken', res.data.refresh)
       localStorage.setItem('apiBase', base)
 
       setStatus('Login successful — redirecting…')

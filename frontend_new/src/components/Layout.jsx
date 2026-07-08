@@ -4,10 +4,10 @@ export default function Layout() {
   const navigate = useNavigate()
 
   function handleLogout() {
-    localStorage.removeItem('authToken')
-    navigate('/login')
-  }
-
+  localStorage.removeItem('accessToken')
+  localStorage.removeItem('refreshToken')
+  navigate('/login')
+}
   return (
     <div className="app-shell">
       <aside className="sidebar">

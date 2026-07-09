@@ -31,4 +31,5 @@ urlpatterns = [
     path('api/',include('manager.api_urls')),
     path('api/login/', TokenObtainPairView.as_view(), name='Obtain'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/member/', include('member.api_urls')),
 ] +static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

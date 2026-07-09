@@ -28,7 +28,7 @@ urlpatterns = [
     path('',views.start,name='Start'),
     path('member/',include('member.urls')),
     path('manager/',include('manager.urls')),
-    path('api',include('manager.api_urls')),
+    path('api/',include('manager.api_urls')),
     path('api/login/', TokenObtainPairView.as_view(), name='Obtain'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ] +static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

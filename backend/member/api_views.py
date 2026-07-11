@@ -4,7 +4,13 @@ from rest_framework.permissions import AllowAny
 from django.db.models import Q
 from manager.models import member, Save, Borrowed
 from manager.serializers import SaveSerializer, MemberSerializer
+from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import make_password, check_password
 
+
+
+
+'''Check the member is authorized or not'''
 
 class MemberLoginView(APIView):
     permission_classes = [AllowAny]
@@ -15,9 +21,9 @@ class MemberLoginView(APIView):
             m = member.objects.get(Email=email)
         except member.DoesNotExist:
             return Response({'detail': 'Email does not match'}, status=400)
-        if m.Password != password:
+        if not check_password(password, m.Password):
             return Response({'detail': 'Password does not match'}, status=400)
-        return Response(MemberSerializer(m).data)
+        return Response(MemberSerializer(m, context={'request': request}).data)
 
 
 '''  index.html  '''
@@ -109,10 +115,12 @@ class MemberProfileView(APIView):
             m = member.objects.get(m_id=member_id)
         except member.DoesNotExist:
             return Response({'detail': 'Not found'}, status=404)
-        return Response(MemberSerializer(m).data)
+        return Response(MemberSerializer(m, context={'request': request}).data)
 
 
 '''    Change Password form   '''
+
+
 
 
 class MemberChangePasswordView(APIView):    
@@ -124,12 +132,12 @@ class MemberChangePasswordView(APIView):
             m = member.objects.get(m_id=member_id)
         except member.DoesNotExist:
             return Response({'detail': 'Not found'}, status=404)
-        if m.Password != old:
+        if not check_password(old, m.Password):
             return Response({'detail': 'Old Password is not correct'}, status=400)
         if new != confirm:
             return Response({'detail': 'Confirm password does not match'}, status=400)
-        if new == old:
+        if check_password(new, m.Password):
             return Response({'detail': 'Password should not match your previous!'}, status=400)
-        m.Password = new
+        m.Password = make_password(new)
         m.save()
         return Response({'detail': 'Password changed successfully'})

@@ -27,6 +27,9 @@ export default function MemberProfile() {
   return (
     <div>
       <div className="page-header"><h2>Profile</h2></div>
+      {data.image && (
+  <img src={data.image} alt={data.Name} style={{ width: 90, height: 90, borderRadius: '50%', objectFit: 'cover', marginBottom: 14 }} />
+)}
       <p><strong>ID:</strong> {data.m_id}</p>
       <p><strong>Name:</strong> {data.Name}</p>
       <p><strong>Email:</strong> {data.Email}</p>

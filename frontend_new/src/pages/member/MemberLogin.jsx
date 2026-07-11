@@ -26,21 +26,35 @@ export default function MemberLogin() {
 
   return (
     <div className="login-wrap">
-      <div className="login-card">
-        <h1>Stacks</h1>
-        <div className="brand-sub-dark">Member — Sign In</div>
-        <form onSubmit={handleSubmit}>
+      <div className="auth-card">
+        <div className="auth-side">
           <div>
-            <label>Email</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required style={{ width: '100%' }} />
+            <svg className="auth-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+              <circle cx="12" cy="8" r="3.4" />
+              <path d="M5 20c1-3.5 4-5 7-5s6 1.5 7 5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <h2>Member Portal</h2>
+            <p>Browse the catalog, request books and keep track of your borrowing.</p>
           </div>
-          <div>
-            <label>Password</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ width: '100%' }} />
-          </div>
-          <button type="submit" className="btn btn-primary">Login</button>
-        </form>
-        {status && <div className={`status-msg ${statusType}`} style={{ marginTop: 14 }}>{status}</div>}
+          <div className="auth-side-foot">Stacks · Member Access</div>
+        </div>
+
+        <div className="auth-form-wrap">
+          <h1>Hello there</h1>
+          <div className="brand-sub-dark">Member — Sign In</div>
+          <form onSubmit={handleSubmit}>
+            <div>
+              <label>Email</label>
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required style={{ width: '100%' }} />
+            </div>
+            <div>
+              <label>Password</label>
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ width: '100%' }} />
+            </div>
+            <button type="submit" className="btn btn-primary">Login</button>
+          </form>
+          {status && <div className={`status-msg ${statusType}`} style={{ marginTop: 14 }}>{status}</div>}
+        </div>
       </div>
     </div>
   )

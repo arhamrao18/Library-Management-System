@@ -29,8 +29,7 @@ class MemberBooksView(APIView):
         qs = Save.objects.all()
         if q:
             qs = qs.filter(Q(title__icontains=q) | Q(Author__icontains=q) | Q(Category__icontains=q))
-        return Response(SaveSerializer(qs, many=True).data)
-
+        return Response(SaveSerializer(qs, many=True, context={'request': request}).data)
 
 '''index.html -> Borrow button (getreq)'''
 
@@ -69,7 +68,7 @@ class MemberRequestsView(APIView):
                 'book_id': book.id, 'title': book.title, 'Author': book.Author,
                 'p_date': book.p_date, 'Category': book.Category,
                 'Description': book.Description,
-                'image': book.image.url if book.image else None,
+                'image': request.build_absolute_uri(book.image.url) if book.image else None,
                 'Status': b.Status,
             })
         return Response(data)

@@ -150,12 +150,5 @@ All manager endpoints require a valid JWT (`Authorization: Bearer <token>`).
 - PostgreSQL support for production deployment
 - Dockerized setup for one-command local development
 
----
-
-## 📄 License
-
-This project is available for demonstration and portfolio purposes. Contact the author for commercial licensing.
-
----
 
 <p align="center">Built with Django REST Framework &amp; React</p>

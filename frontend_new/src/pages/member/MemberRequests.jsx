@@ -1,22 +1,21 @@
 import { useEffect, useState } from 'react'
-import api from '../../api.js'
+import memberApi from '../../memberApi.js'
 
 export default function MemberRequests() {
   const [items, setItems] = useState([])
-  const memberId = localStorage.getItem('memberId')
 
   async function load() {
-    const res = await api.get('member/requests/', { params: { member_id: memberId } })
+    const res = await memberApi.get('member/requests/')
     setItems(res.data)
   }
   useEffect(() => { load() }, [])
 
   async function cancel(book_id) {
-    await api.delete(`member/requests/cancel/${book_id}/`, { params: { member_id: memberId } })
+    await memberApi.delete(`member/requests/cancel/${book_id}/`)
     load()
   }
   async function returnBook(book_id) {
-    await api.post(`member/requests/return/${book_id}/`, { member_id: memberId })
+    await memberApi.post(`member/requests/return/${book_id}/`, {})
     load()
   }
 

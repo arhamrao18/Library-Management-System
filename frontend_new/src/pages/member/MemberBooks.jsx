@@ -1,22 +1,22 @@
 import { useEffect, useState } from 'react'
-import api from '../../api.js'
+import memberApi from '../../memberApi.js'
 
 export default function MemberBooks() {
   const [books, setBooks] = useState([])
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState('')
   const [statusType, setStatusType] = useState('')
-  const memberId = localStorage.getItem('memberId')
+
 
   async function loadBooks(q = '') {
-    const res = await api.get('member/books/', { params: q ? { q } : {} })
+    const res = await memberApi.get('member/books/', { params: q ? { q } : {} })
     setBooks(res.data)
   }
   useEffect(() => { loadBooks() }, [])
 
   async function handleBorrow(book_id) {
     try {
-      await api.post('member/borrow/', { member_id: memberId, book_id })
+      await memberApi.post('member/borrow/', { book_id })
       setStatus('Request submitted!'); setStatusType('ok')
     } catch (err) {
       setStatus(err.response?.data?.detail || 'Failed'); setStatusType('err')

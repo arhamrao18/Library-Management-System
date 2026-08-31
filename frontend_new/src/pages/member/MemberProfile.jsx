@@ -1,21 +1,20 @@
 import { useEffect, useState } from 'react'
-import api from '../../api.js'
+import memberApi from '../../memberApi.js'
 
 export default function MemberProfile() {
   const [data, setData] = useState(null)
   const [form, setForm] = useState({ old_password: '', new_password: '', confirm_password: '' })
   const [status, setStatus] = useState('')
   const [statusType, setStatusType] = useState('')
-  const memberId = localStorage.getItem('memberId')
 
   useEffect(() => {
-    api.get('member/profile/', { params: { member_id: memberId } }).then((res) => setData(res.data))
+    memberApi.get('member/profile/').then((res) => setData(res.data))
   }, [])
 
   async function changePassword(e) {
     e.preventDefault()
     try {
-      const res = await api.post('member/change-password/', { member_id: memberId, ...form })
+      const res = await memberApi.post('member/change-password/', form)
       setStatus(res.data.detail); setStatusType('ok')
     } catch (err) {
       setStatus(err.response?.data?.detail || 'Failed'); setStatusType('err')

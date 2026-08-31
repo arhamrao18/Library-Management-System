@@ -32,11 +32,13 @@ class MemberLoginView(APIView):
         data['access'] = str(refresh.access_token)
         data['refresh'] = str(refresh)
         return Response(data)
+
 '''  index.html  '''
 
 class MemberBooksView(APIView):
-    authentication_classes = [MemberJWTAuthentication]         
-    permission_classes = [IsAuthenticated]
+    # Public catalog — anyone (even logged out) should be able to browse books
+    authentication_classes = [MemberJWTAuthentication]
+    permission_classes = [AllowAny]
     def get(self, request):
         q = request.query_params.get('q')
         qs = Save.objects.all()
@@ -46,11 +48,11 @@ class MemberBooksView(APIView):
 
 '''index.html -> Borrow button (getreq)'''
 
-class MemberBorrowView(APIView):       
+class MemberBorrowView(APIView):
     authentication_classes = [MemberJWTAuthentication]
     permission_classes = [IsAuthenticated]
     def post(self, request):
-        member_id = request.data.get('member_id')
+        member_id = request.user.m_id
         book_id = request.data.get('book_id')
         try:
             m = member.objects.get(m_id=member_id)
@@ -67,11 +69,11 @@ class MemberBorrowView(APIView):
 
 '''  Request.html  '''
 
-class MemberRequestsView(APIView):    
-    authentication_classes = [MemberJWTAuthentication]  
+class MemberRequestsView(APIView):
+    authentication_classes = [MemberJWTAuthentication]
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        member_id = request.query_params.get('member_id')
+        member_id = request.user.m_id
         borrows = Borrowed.objects.filter(i_id=member_id).exclude(Status='Returned')
         data = []
         for b in borrows:
@@ -91,22 +93,22 @@ class MemberRequestsView(APIView):
 
 '''    Cancel button     '''
 
-class MemberCancelRequestView(APIView): 
-    authentication_classes = [MemberJWTAuthentication]   
+class MemberCancelRequestView(APIView):
+    authentication_classes = [MemberJWTAuthentication]
     permission_classes = [IsAuthenticated]
     def delete(self, request, book_id):
-        member_id = request.query_params.get('member_id')
+        member_id = request.user.m_id
         Borrowed.objects.filter(i_id=member_id, book_id=book_id).delete()
         return Response({'detail': 'Request cancelled'})
 
 
 '''   Return button  '''
 
-class MemberReturnRequestView(APIView):   
-    authentication_classes = [MemberJWTAuthentication] 
+class MemberReturnRequestView(APIView):
+    authentication_classes = [MemberJWTAuthentication]
     permission_classes = [IsAuthenticated]
     def post(self, request, book_id):
-        member_id = request.data.get('member_id')
+        member_id = request.user.m_id
         try:
             b = Borrowed.objects.get(i_id=member_id, book_id=book_id)
         except Borrowed.DoesNotExist:
@@ -118,11 +120,11 @@ class MemberReturnRequestView(APIView):
 
 '''    Profile view   '''
 
-class MemberProfileView(APIView):      
+class MemberProfileView(APIView):
     authentication_classes = [MemberJWTAuthentication]
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        member_id = request.query_params.get('member_id')
+        member_id = request.user.m_id
         try:
             m = member.objects.get(m_id=member_id)
         except member.DoesNotExist:
@@ -133,13 +135,11 @@ class MemberProfileView(APIView):
 '''    Change Password form   '''
 
 
-
-
-class MemberChangePasswordView(APIView):   
-    authentication_classes = [MemberJWTAuthentication] 
+class MemberChangePasswordView(APIView):
+    authentication_classes = [MemberJWTAuthentication]
     permission_classes = [IsAuthenticated]
     def post(self, request):
-        member_id = request.data.get('member_id')
+        member_id = request.user.m_id
         old, new, confirm = request.data.get('old_password'), request.data.get('new_password'), request.data.get('confirm_password')
         try:
             m = member.objects.get(m_id=member_id)

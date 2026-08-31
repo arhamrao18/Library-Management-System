@@ -1,13 +1,14 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.db.models import Q
 from manager.models import member, Save, Borrowed
 from manager.serializers import SaveSerializer, MemberSerializer
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password, check_password
 
-
+from rest_framework_simplejwt.tokens import RefreshToken
+from .authentication import MemberJWTAuthentication
 
 
 '''Check the member is authorized or not'''
@@ -23,13 +24,19 @@ class MemberLoginView(APIView):
             return Response({'detail': 'Email does not match'}, status=400)
         if not check_password(password, m.Password):
             return Response({'detail': 'Password does not match'}, status=400)
-        return Response(MemberSerializer(m, context={'request': request}).data)
 
-
+        # Issue a JWT tied to this member (member_id claim, not trusted client input)
+        refresh = RefreshToken()
+        refresh['member_id'] = m.m_id
+        data = MemberSerializer(m, context={'request': request}).data
+        data['access'] = str(refresh.access_token)
+        data['refresh'] = str(refresh)
+        return Response(data)
 '''  index.html  '''
 
-class MemberBooksView(APIView):         
-    permission_classes = [AllowAny]
+class MemberBooksView(APIView):
+    authentication_classes = [MemberJWTAuthentication]         
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         q = request.query_params.get('q')
         qs = Save.objects.all()
@@ -40,7 +47,8 @@ class MemberBooksView(APIView):
 '''index.html -> Borrow button (getreq)'''
 
 class MemberBorrowView(APIView):       
-    permission_classes = [AllowAny]
+    authentication_classes = [MemberJWTAuthentication]
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         member_id = request.data.get('member_id')
         book_id = request.data.get('book_id')
@@ -59,8 +67,9 @@ class MemberBorrowView(APIView):
 
 '''  Request.html  '''
 
-class MemberRequestsView(APIView):      
-    permission_classes = [AllowAny]
+class MemberRequestsView(APIView):    
+    authentication_classes = [MemberJWTAuthentication]  
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         member_id = request.query_params.get('member_id')
         borrows = Borrowed.objects.filter(i_id=member_id).exclude(Status='Returned')
@@ -82,8 +91,9 @@ class MemberRequestsView(APIView):
 
 '''    Cancel button     '''
 
-class MemberCancelRequestView(APIView):    
-    permission_classes = [AllowAny]
+class MemberCancelRequestView(APIView): 
+    authentication_classes = [MemberJWTAuthentication]   
+    permission_classes = [IsAuthenticated]
     def delete(self, request, book_id):
         member_id = request.query_params.get('member_id')
         Borrowed.objects.filter(i_id=member_id, book_id=book_id).delete()
@@ -92,8 +102,9 @@ class MemberCancelRequestView(APIView):
 
 '''   Return button  '''
 
-class MemberReturnRequestView(APIView):    
-    permission_classes = [AllowAny]
+class MemberReturnRequestView(APIView):   
+    authentication_classes = [MemberJWTAuthentication] 
+    permission_classes = [IsAuthenticated]
     def post(self, request, book_id):
         member_id = request.data.get('member_id')
         try:
@@ -108,7 +119,8 @@ class MemberReturnRequestView(APIView):
 '''    Profile view   '''
 
 class MemberProfileView(APIView):      
-    permission_classes = [AllowAny]
+    authentication_classes = [MemberJWTAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         member_id = request.query_params.get('member_id')
         try:
@@ -123,8 +135,9 @@ class MemberProfileView(APIView):
 
 
 
-class MemberChangePasswordView(APIView):    
-    permission_classes = [AllowAny]
+class MemberChangePasswordView(APIView):   
+    authentication_classes = [MemberJWTAuthentication] 
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         member_id = request.data.get('member_id')
         old, new, confirm = request.data.get('old_password'), request.data.get('new_password'), request.data.get('confirm_password')

@@ -9,11 +9,15 @@ export default function MemberLogin() {
   const [status, setStatus] = useState('')
   const [statusType, setStatusType] = useState('')
 
-  async function handleSubmit(e) {
+ async function handleSubmit(e) {
     e.preventDefault()
     setStatus('Signing in…'); setStatusType('')
     try {
       const res = await api.post('member/login/', { email, password })
+      localStorage.setItem('memberAccessToken', res.data.access)
+      localStorage.setItem('memberRefreshToken', res.data.refresh)
+      // memberId/memberName ab sirf DISPLAY ke liye rakhe hain (e.g. "Welcome, Ali"),
+      // koi bhi API request in par security ke liye bharosa nahi karti — token karta hai
       localStorage.setItem('memberId', res.data.m_id)
       localStorage.setItem('memberName', res.data.Name)
       navigate('/member/books')

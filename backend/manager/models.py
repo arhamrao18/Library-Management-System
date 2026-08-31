@@ -19,7 +19,7 @@ class member(models.Model):
     m_id=models.AutoField(primary_key=True)
     Name=models.CharField(max_length=100)
     Email=models.CharField(max_length=100)
-    Password=models.CharField(max_length=10,default='')
+    Password=models.CharField(max_length=200,default='')
     Address=models.CharField(max_length=500)
     image=models.ImageField(upload_to='image')
     def __str__(self):

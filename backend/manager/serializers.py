@@ -17,10 +17,22 @@ class SaveSerializer(serializers.ModelSerializer):
 
 '''Member Serializer'''
 
+from django.contrib.auth.hashers import make_password
+
 class MemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = member
         fields = '__all__'
+
+    def create(self, validated_data):
+        if validated_data.get('Password'):
+            validated_data['Password'] = make_password(validated_data['Password'])
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        if validated_data.get('Password'):
+            validated_data['Password'] = make_password(validated_data['Password'])
+        return super().update(instance, validated_data)
 
 '''Borrowed Serializer'''
 class BorrowedSerializer(serializers.ModelSerializer):

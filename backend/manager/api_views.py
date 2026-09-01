@@ -1,11 +1,11 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, APIView
 from .models import Login, member, Save, Borrowed
 from .serializers import LoginSerializer, MemberSerializer, SaveSerializer, BorrowedSerializer
 from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-
+from django.core.management import call_command
 
 class BookViewSet(viewsets.ModelViewSet):
     serializer_class = SaveSerializer
@@ -70,3 +70,16 @@ class BorrowedViewSet(viewsets.ModelViewSet):
         book.Quantity += 1
         book.save()
         return Response({'message': 'Returned'})
+    
+class GenerateFeesView(APIView):
+    """
+    Admin-triggered endpoint that manually runs the same logic as the
+    'generate_fees' management command — creates this month's fee record
+    for every member and marks overdue ones with a fine.
+    Only logged-in admins (Django auth User) can call this.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        call_command('generate_fees')
+        return Response({'detail': 'Fee generation completed successfully.'})

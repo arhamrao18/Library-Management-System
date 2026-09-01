@@ -17,7 +17,7 @@ import MemberRequests from './pages/member/MemberRequests.jsx'
 import MemberProfile from './pages/member/MemberProfile.jsx'
 import MemberLayout from './components/MemberLayout.jsx'
 import MemberProtectedRoute from './components/MemberProtectedRoute.jsx'
-
+import Fees from './pages/Fees.jsx'
 export default function App() {
   return (
     <Routes>
@@ -34,6 +34,7 @@ export default function App() {
         <Route path="borrow-requests" element={<BorrowRequests />} />
         <Route path="borrowed" element={<Borrowed />} />
         <Route path="returns" element={<Returns />} />
+        <Route path="fees" element={<Fees />} />
       </Route>
 
       {/* Member auth */}

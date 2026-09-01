@@ -37,7 +37,10 @@ export default function Layout() {
         <div className="nav-section">Borrowing</div>
         <NavLink to="/borrow-requests" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.inbox} />Borrow Requests</NavLink>
         <NavLink to="/borrowed" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.borrowed} />Borrowed</NavLink>
-        <NavLink to="/returns" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.returns} />Returns</NavLink>
+                <NavLink to="/returns" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.returns} />Returns</NavLink>
+
+        <div className="nav-section">Fees</div>
+        <NavLink to="/fees" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.borrowed} />Membership Fees</NavLink>
 
         <button className="logout-btn" onClick={handleLogout}><Icon d={icons.logout} />Logout</button>
       </aside>

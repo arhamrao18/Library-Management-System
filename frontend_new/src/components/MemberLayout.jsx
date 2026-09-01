@@ -11,10 +11,12 @@ const Icon = ({ d }) => (
 )
 
 export default function MemberLayout() {
-  const navigate = useNavigate()
+    const navigate = useNavigate()
   function handleLogout() {
     localStorage.removeItem('memberId')
     localStorage.removeItem('memberName')
+    localStorage.removeItem('memberAccessToken')
+    localStorage.removeItem('memberRefreshToken')
     navigate('/member/login')
   }
   return (

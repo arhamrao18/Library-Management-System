@@ -10,4 +10,5 @@ urlpatterns = [
     path('requests/return/<int:book_id>/', api_views.MemberReturnRequestView.as_view(), name='member_api_return'),
     path('profile/', api_views.MemberProfileView.as_view(), name='member_api_profile'),
     path('change-password/', api_views.MemberChangePasswordView.as_view(), name='member_api_change_password'),
+    path('fees/', api_views.MemberFeesView.as_view(), name='member_api_fees'),
 ]

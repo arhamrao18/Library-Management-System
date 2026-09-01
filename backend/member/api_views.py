@@ -2,14 +2,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.db.models import Q
-from manager.models import member, Save, Borrowed
-from manager.serializers import SaveSerializer, MemberSerializer
+from manager.models import member, Save, Borrowed,MembershipFee
+from manager.serializers import SaveSerializer, MemberSerializer,MembershipFeeSerializer
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password, check_password
 
 from rest_framework_simplejwt.tokens import RefreshToken
 from .authentication import MemberJWTAuthentication
-
 
 '''Check the member is authorized or not'''
 
@@ -154,3 +153,19 @@ class MemberChangePasswordView(APIView):
         m.Password = make_password(new)
         m.save()
         return Response({'detail': 'Password changed successfully'})
+    
+
+
+
+class MemberFeesView(APIView):
+    """
+    Lets a logged-in member view their own membership fee history.
+    Uses request.user.m_id (from the JWT) — never trusts a client-supplied member_id.
+    """
+    authentication_classes = [MemberJWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        member_id = request.user.m_id
+        fees = MembershipFee.objects.filter(member_id=member_id).order_by('-month')
+        return Response(MembershipFeeSerializer(fees, many=True, context={'request': request}).data)

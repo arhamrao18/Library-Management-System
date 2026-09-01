@@ -60,3 +60,20 @@ class BorrowedSerializer(serializers.ModelSerializer):
         model = Borrowed
         fields = '__all__'
     
+
+
+class MembershipFeeSerializer(serializers.ModelSerializer):
+    # Extra read-only fields pulled from the related member,
+    # so the admin dashboard doesn't need a second API call to show names.
+    member_name = serializers.CharField(source='member.Name', read_only=True)
+    member_email = serializers.CharField(source='member.Email', read_only=True)
+    total_due = serializers.ReadOnlyField()
+
+    class Meta:
+        model = MembershipFee
+        fields = [
+            'id', 'member', 'member_name', 'member_email',
+            'month', 'due_date', 'amount', 'fine_amount',
+            'status', 'paid_date', 'receipt_id', 'total_due',
+        ]
+        read_only_fields = ['fine_amount', 'status', 'paid_date', 'receipt_id']

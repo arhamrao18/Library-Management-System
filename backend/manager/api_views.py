@@ -1,6 +1,6 @@
 from rest_framework import viewsets, APIView
-from .models import Login, member, Save, Borrowed
-from .serializers import LoginSerializer, MemberSerializer, SaveSerializer, BorrowedSerializer
+from .models import Login, member, Save, Borrowed, MembershipFee
+from .serializers import LoginSerializer, MemberSerializer, SaveSerializer, BorrowedSerializer, MembershipFeeSerializer
 from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -83,3 +83,26 @@ class GenerateFeesView(APIView):
     def post(self, request):
         call_command('generate_fees')
         return Response({'detail': 'Fee generation completed successfully.'})
+    
+
+
+class MembershipFeeViewSet(viewsets.ModelViewSet):
+    """
+    Admin-facing endpoint for viewing and managing membership fees.
+    Supports filtering by status and month via query params, e.g.:
+    /api/fees/?status=Overdue
+    /api/fees/?month=2026-09-01
+    """
+    queryset = MembershipFee.objects.select_related('member').all().order_by('-month', 'member__Name')
+    serializer_class = MembershipFeeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        status_filter = self.request.query_params.get('status')
+        month_filter = self.request.query_params.get('month')
+        if status_filter:
+            qs = qs.filter(status=status_filter)
+        if month_filter:
+            qs = qs.filter(month=month_filter)
+        return qs

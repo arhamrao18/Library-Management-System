@@ -1,4 +1,7 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import api from '../api.js'
+
 
 const icons = {
   books: <path d="M4 19V6a2 2 0 0 1 2-2h11a1 1 0 0 1 1 1v14M4 19a2 2 0 0 0 2 2h12M8 8h6M8 12h6" strokeLinecap="round" strokeLinejoin="round"/>,
@@ -15,6 +18,22 @@ const Icon = ({ d }) => (
 
 export default function Layout() {
   const navigate = useNavigate()
+  const [pendingCount, setPendingCount] = useState(0)
+
+  useEffect(() => {
+    async function loadPendingCount() {
+      try {
+        const res = await api.get('borrowed/', { params: { status: 'pending' } })
+        setPendingCount(res.data.length)
+      } catch {
+        // silently ignore
+      }
+    }
+    loadPendingCount()
+    const interval = setInterval(loadPendingCount, 15000) // refresh every 15s
+    return () => clearInterval(interval)
+  }, [])
+
   function handleLogout() {
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
@@ -35,7 +54,19 @@ export default function Layout() {
         <NavLink to="/members/add" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.add} />Add Member</NavLink>
 
         <div className="nav-section">Borrowing</div>
-        <NavLink to="/borrow-requests" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.inbox} />Borrow Requests</NavLink>
+                <NavLink to="/borrow-requests" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ display: 'flex', alignItems: 'center' }}><Icon d={icons.inbox} />Borrow Requests</span>
+          {pendingCount > 0 && (
+            <span style={{
+              background: '#e11d48', color: 'white', borderRadius: '999px',
+              fontSize: '0.7rem', fontWeight: 'bold', minWidth: 18, height: 18,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              padding: '0 5px',
+            }}>
+              {pendingCount}
+            </span>
+          )}
+        </NavLink>
         <NavLink to="/borrowed" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.borrowed} />Borrowed</NavLink>
                 <NavLink to="/returns" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.returns} />Returns</NavLink>
 

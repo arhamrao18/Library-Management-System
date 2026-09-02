@@ -11,4 +11,5 @@ urlpatterns = [
     path('profile/', api_views.MemberProfileView.as_view(), name='member_api_profile'),
     path('change-password/', api_views.MemberChangePasswordView.as_view(), name='member_api_change_password'),
     path('fees/', api_views.MemberFeesView.as_view(), name='member_api_fees'),
+    path('notifications/unseen-count/', api_views.MemberNotificationCountView.as_view(), name='member_api_unseen_count'),
 ]

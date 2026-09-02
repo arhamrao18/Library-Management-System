@@ -1,4 +1,6 @@
-import { NavLink, Link, Outlet, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { NavLink, Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
+import memberApi from '../memberApi.js'
 
 const icons = {
   books: <path d="M4 19V6a2 2 0 0 1 2-2h11a1 1 0 0 1 1 1v14M4 19a2 2 0 0 0 2 2h12M8 8h6M8 12h6" strokeLinecap="round" strokeLinejoin="round"/>,
@@ -11,7 +13,23 @@ const Icon = ({ d }) => (
 )
 
 export default function MemberLayout() {
-    const navigate = useNavigate()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [unseenCount, setUnseenCount] = useState(0)
+
+  async function loadUnseenCount() {
+    try {
+      const res = await memberApi.get('member/notifications/unseen-count/')
+      setUnseenCount(res.data.unseen_count)
+    } catch {
+      // silently ignore — badge just won't show if this fails
+    }
+  }
+
+  useEffect(() => {
+    loadUnseenCount()
+  }, [location.pathname]) // re-check every time the member navigates (e.g. after viewing requests, badge clears)
+
   function handleLogout() {
     localStorage.removeItem('memberId')
     localStorage.removeItem('memberName')
@@ -19,13 +37,29 @@ export default function MemberLayout() {
     localStorage.removeItem('memberRefreshToken')
     navigate('/member/login')
   }
+
   return (
     <div className="app-shell">
-        <aside className="sidebar">
+      <aside className="sidebar">
         <Link to="/member/books" className="brand" style={{ textDecoration: 'none', cursor: 'pointer' }}>Stacks</Link>
         <div className="brand-sub">Member Portal</div>
+
         <NavLink to="/member/books" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.books} />Books</NavLink>
-        <NavLink to="/member/requests" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.inbox} />My Requests</NavLink>
+
+        <NavLink to="/member/requests" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ display: 'flex', alignItems: 'center' }}><Icon d={icons.inbox} />My Requests</span>
+          {unseenCount > 0 && (
+            <span style={{
+              background: '#e11d48', color: 'white', borderRadius: '999px',
+              fontSize: '0.7rem', fontWeight: 'bold', minWidth: 18, height: 18,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              padding: '0 5px',
+            }}>
+              {unseenCount}
+            </span>
+          )}
+        </NavLink>
+
         <NavLink to="/member/profile" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.profile} />Profile</NavLink>
         <NavLink to="/member/fees" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.inbox} />My Fees</NavLink>
         <button className="logout-btn" onClick={handleLogout}><Icon d={icons.logout} />Logout</button>

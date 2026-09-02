@@ -90,8 +90,12 @@ class MemberRequestsView(APIView):
                 'fine_amount': str(b.fine_amount),
                 'rejection_reason': b.rejection_reason,
             })
+            # Mark rejection as seen the moment the member views this list
+            if b.Status == 'Rejected' and not b.seen_by_member:
+                b.seen_by_member = True
+                b.save()
         return Response(data)
-
+    
 '''    Cancel button     '''
 
 class MemberCancelRequestView(APIView):
@@ -171,3 +175,17 @@ class MemberFeesView(APIView):
         member_id = request.user.m_id
         fees = MembershipFee.objects.filter(member_id=member_id).order_by('-month')
         return Response(MembershipFeeSerializer(fees, many=True, context={'request': request}).data)
+    
+
+class MemberNotificationCountView(APIView):
+    """
+    Returns how many unseen rejection notifications this member has,
+    for showing a badge (e.g. red circle with a number) in the sidebar.
+    """
+    authentication_classes = [MemberJWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        member_id = request.user.m_id
+        count = Borrowed.objects.filter(i_id=member_id, Status='Rejected', seen_by_member=False).count()
+        return Response({'unseen_count': count})

@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { NavLink, Link, Outlet, useNavigate } from 'react-router-dom'
 
 const icons = {
   books: <path d="M4 19V6a2 2 0 0 1 2-2h11a1 1 0 0 1 1 1v14M4 19a2 2 0 0 0 2 2h12M8 8h6M8 12h6" strokeLinecap="round" strokeLinejoin="round"/>,
@@ -21,8 +21,8 @@ export default function MemberLayout() {
   }
   return (
     <div className="app-shell">
-      <aside className="sidebar">
-        <div className="brand">Stacks</div>
+        <aside className="sidebar">
+        <Link to="/member/books" className="brand" style={{ textDecoration: 'none', cursor: 'pointer' }}>Stacks</Link>
         <div className="brand-sub">Member Portal</div>
         <NavLink to="/member/books" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.books} />Books</NavLink>
         <NavLink to="/member/requests" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.inbox} />My Requests</NavLink>

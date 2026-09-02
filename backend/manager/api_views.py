@@ -66,7 +66,16 @@ class BorrowedViewSet(viewsets.ModelViewSet):
 
 
     '''Action to approve the return of a borrowed book and update the book quantity'''
-
+    @action(detail=True, methods=['patch'])
+    def reject(self, request, pk=None):
+        borrow = self.get_object()
+        reason = request.data.get('reason', '').strip()
+        if not reason:
+            return Response({'detail': 'Please provide a reason for rejection'}, status=400)
+        borrow.Status = 'Rejected'
+        borrow.rejection_reason = reason
+        borrow.save()
+        return Response({'message': 'Rejected'})
     @action(detail=True, methods=['patch'])
     def approve_return(self, request, pk=None):
         borrow = self.get_object()

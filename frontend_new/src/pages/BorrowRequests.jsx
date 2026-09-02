@@ -32,6 +32,23 @@ export default function BorrowRequests() {
     }
   }
 
+  async function handleReject(id) {
+    const reason = window.prompt('Reason for rejecting this request (required):')
+    if (reason === null) return // admin clicked Cancel on the prompt itself
+    if (!reason.trim()) {
+      window.alert('A reason is required to reject a request.')
+      return
+    }
+    try {
+      await api.patch(`borrowed/${id}/reject/`, { reason: reason.trim() })
+      setStatus('Request rejected'); setStatusType('ok')
+      loadRequests()
+    } catch (err) {
+      setStatus(err.response?.data?.detail || 'Failed to reject request')
+      setStatusType('err')
+    }
+  }
+
   return (
     <div>
       <div className="page-header">
@@ -65,7 +82,10 @@ export default function BorrowRequests() {
                 <td>{r.Email}</td>
                 <td>{r.Book}</td>
                 <td><span className="pill pending">{r.Status}</span></td>
-                <td><button className="btn btn-primary btn-small" onClick={() => handleApprove(r.b_id)}>Approve</button></td>
+                <td>
+                  <button className="btn btn-primary btn-small" onClick={() => handleApprove(r.b_id)}>Approve</button>{' '}
+                  <button className="btn btn-danger btn-small" onClick={() => handleReject(r.b_id)}>Reject</button>
+                </td>
               </tr>
             ))}
           </tbody>

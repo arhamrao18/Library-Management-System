@@ -31,7 +31,7 @@ export default function MemberRequests() {
               <p className="meta">{i.Author} · {i.Category}</p>
               <span className="qty-pill">{i.Status}</span>
 
-              {/* Show due date once the book has been approved/handed over */}
+                           {/* Show due date once the book has been approved/handed over */}
               {i.Status === 'Approved' && i.due_date && (
                 <p style={{ fontSize: '0.85rem', marginTop: 6 }}>
                   Due by: <strong>{i.due_date}</strong>
@@ -43,10 +43,19 @@ export default function MemberRequests() {
                 </p>
               )}
 
+              {/* Show rejection message + reason from admin */}
+              {i.Status === 'Rejected' && (
+                <p style={{ fontSize: '0.85rem', marginTop: 6, color: '#b91c1c' }}>
+                  Your request was cancelled by admin.<br />
+                  Reason: <strong>{i.rejection_reason || 'No reason given'}</strong>
+                </p>
+              )}
+
               <div style={{ marginTop: 10 }}>
                 {i.Status === 'Approved' && <button className="btn btn-small" onClick={() => returnBook(i.book_id)}>Return</button>}
                 {i.Status === 'pending' && <button className="btn btn-danger btn-small" onClick={() => cancel(i.book_id)}>Cancel Request</button>}
                 {i.Status === 'Returned Request' && <button className="btn btn-small" disabled>In Process…</button>}
+                {i.Status === 'Rejected' && <button className="btn btn-small" onClick={() => cancel(i.book_id)}>Dismiss</button>}
               </div>
             </div>
           </div>

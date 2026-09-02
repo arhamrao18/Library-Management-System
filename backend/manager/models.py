@@ -48,6 +48,9 @@ class Borrowed(models.Model):
     return_date = models.DateField(null=True, blank=True)
     fine_amount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
+    # New field for rejection reason — only set when admin rejects/cancels a request
+    rejection_reason = models.CharField(max_length=500, blank=True, default='')
+    seen_by_member = models.BooleanField(default=False)
     def __str__(self):
         return self.Name
 

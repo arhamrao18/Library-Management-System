@@ -88,6 +88,7 @@ class MemberRequestsView(APIView):
                 'due_date': b.due_date,
                 'is_overdue': b.is_overdue,
                 'fine_amount': str(b.fine_amount),
+                'rejection_reason': b.rejection_reason,
             })
         return Response(data)
 

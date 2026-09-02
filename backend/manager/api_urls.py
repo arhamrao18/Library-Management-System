@@ -8,6 +8,6 @@ router.register(r'members', MemberViewSet, basename='member')
 router.register(r'borrowed', BorrowedViewSet, basename='borrowed')
 router.register(r'fees', MembershipFeeViewSet, basename='fee')
 
-urlpatterns = router.urls + [
+urlpatterns = [
     path('fees/generate/', GenerateFeesView.as_view()),
-]
+] + router.urls

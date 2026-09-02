@@ -12,4 +12,6 @@ urlpatterns = [
     path('change-password/', api_views.MemberChangePasswordView.as_view(), name='member_api_change_password'),
     path('fees/', api_views.MemberFeesView.as_view(), name='member_api_fees'),
     path('notifications/unseen-count/', api_views.MemberNotificationCountView.as_view(), name='member_api_unseen_count'),
+     path('fees/checkout/', api_views.CreateCheckoutSessionView.as_view(), name='member_api_checkout'),
+    path('fees/confirm-payment/', api_views.ConfirmPaymentView.as_view(), name='member_api_confirm_payment'),
 ]

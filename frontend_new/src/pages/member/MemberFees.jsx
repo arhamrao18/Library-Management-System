@@ -5,6 +5,7 @@ export default function MemberFees() {
   const [fees, setFees] = useState([])
   const [status, setStatus] = useState('Loading your fees…')
   const [statusType, setStatusType] = useState('')
+  const [payingId, setPayingId] = useState(null)
 
   async function loadFees() {
     setStatus('Loading your fees…')
@@ -21,8 +22,20 @@ export default function MemberFees() {
 
   useEffect(() => { loadFees() }, [])
 
-  // The most recent fee that still needs to be paid, if any
   const currentDue = fees.find(f => f.status !== 'Paid')
+
+  async function handlePayNow(feeId) {
+    setPayingId(feeId)
+    try {
+      const res = await memberApi.post('member/fees/checkout/', { fee_id: feeId })
+      // Redirect the browser to Stripe's hosted checkout page
+      window.location.href = res.data.checkout_url
+    } catch (err) {
+      setStatus(err.response?.data?.detail || 'Could not start payment. Please try again.')
+      setStatusType('err')
+      setPayingId(null)
+    }
+  }
 
   return (
     <div>
@@ -47,8 +60,13 @@ export default function MemberFees() {
             Due by {currentDue.due_date}
             {Number(currentDue.fine_amount) > 0 && ` (includes Rs. ${currentDue.fine_amount} late fine)`}
           </div>
-          {/* Pay Now button — will be wired to Stripe in the next step */}
-          <button className="btn btn-primary">Pay Now</button>
+          <button
+            className="btn btn-primary"
+            onClick={() => handlePayNow(currentDue.id)}
+            disabled={payingId === currentDue.id}
+          >
+            {payingId === currentDue.id ? 'Redirecting to payment…' : 'Pay Now'}
+          </button>
         </div>
       )}
 
@@ -64,6 +82,7 @@ export default function MemberFees() {
               <th>Fine</th>
               <th>Total</th>
               <th>Status</th>
+              <th>Receipt</th>
             </tr>
           </thead>
           <tbody>
@@ -82,6 +101,7 @@ export default function MemberFees() {
                     {f.status}
                   </span>
                 </td>
+                <td>{f.receipt_id || '-'}</td>
               </tr>
             ))}
           </tbody>

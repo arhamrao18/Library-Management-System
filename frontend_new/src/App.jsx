@@ -18,6 +18,7 @@ import MemberBooks from './pages/member/MemberBooks.jsx'
 import MemberRequests from './pages/member/MemberRequests.jsx'
 import MemberProfile from './pages/member/MemberProfile.jsx'
 import MemberFees from './pages/member/MemberFees.jsx'
+import PaymentSuccess from './pages/member/PaymentSuccess.jsx'
 import MemberLayout from './components/MemberLayout.jsx'
 import MemberProtectedRoute from './components/MemberProtectedRoute.jsx'
 
@@ -48,6 +49,7 @@ export default function App() {
         <Route path="requests" element={<MemberRequests />} />
         <Route path="profile" element={<MemberProfile />} />
         <Route path="fees" element={<MemberFees />} />
+        <Route path="payment-success" element={<PaymentSuccess />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

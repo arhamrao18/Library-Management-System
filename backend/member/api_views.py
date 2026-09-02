@@ -6,9 +6,16 @@ from manager.models import member, Save, Borrowed,MembershipFee
 from manager.serializers import SaveSerializer, MemberSerializer,MembershipFeeSerializer
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password, check_password
-
+import stripe
+from django.conf import settings
+from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
 from .authentication import MemberJWTAuthentication
+
+import stripe
+from django.conf import settings
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 '''Check the member is authorized or not'''
 
@@ -189,3 +196,97 @@ class MemberNotificationCountView(APIView):
         member_id = request.user.m_id
         count = Borrowed.objects.filter(i_id=member_id, Status='Rejected', seen_by_member=False).count()
         return Response({'unseen_count': count})
+    
+
+
+
+
+class CreateCheckoutSessionView(APIView):
+    """
+    Member clicks "Pay Now" -> this creates a Stripe Checkout Session
+    for the given fee and returns the URL to redirect the member to.
+    """
+    authentication_classes = [MemberJWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        fee_id = request.data.get('fee_id')
+        member_id = request.user.m_id
+
+        try:
+            fee = MembershipFee.objects.get(id=fee_id, member_id=member_id)
+        except MembershipFee.DoesNotExist:
+            return Response({'detail': 'Fee record not found'}, status=404)
+
+        if fee.status == 'Paid':
+            return Response({'detail': 'This fee has already been paid'}, status=400)
+
+        # Stripe expects the amount in the smallest currency unit (e.g. paisa, not rupees)
+        amount_in_smallest_unit = int(fee.total_due * 100)
+
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'pkr',
+                    'product_data': {
+                        'name': f"Membership Fee — {fee.month.strftime('%B %Y')}",
+                    },
+                    'unit_amount': amount_in_smallest_unit,
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
+            success_url=f"{settings.FRONTEND_URL}/member/payment-success?session_id={{CHECKOUT_SESSION_ID}}&fee_id={fee.id}",
+            cancel_url=f"{settings.FRONTEND_URL}/member/fees",
+        )
+
+        # Save the session id now so we can verify it later
+        fee.stripe_session_id = session.id
+        fee.save()
+
+        return Response({'checkout_url': session.url})
+
+
+class ConfirmPaymentView(APIView):
+    """
+    Called after the member returns from Stripe's Checkout page.
+    Verifies the payment directly with Stripe (never trusts the frontend alone),
+    then marks the fee as Paid and generates a receipt ID.
+    """
+    authentication_classes = [MemberJWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        session_id = request.data.get('session_id')
+        fee_id = request.data.get('fee_id')
+        member_id = request.user.m_id
+
+        try:
+            fee = MembershipFee.objects.get(id=fee_id, member_id=member_id)
+        except MembershipFee.DoesNotExist:
+            return Response({'detail': 'Fee record not found'}, status=404)
+
+        if fee.status == 'Paid':
+            # Already confirmed earlier — just return the existing receipt
+            return Response(MembershipFeeSerializer(fee, context={'request': request}).data)
+
+        # Verify with Stripe directly — this is the real source of truth
+        try:
+            session = stripe.checkout.Session.retrieve(session_id)
+        except stripe.error.StripeError:
+            return Response({'detail': 'Could not verify payment with Stripe'}, status=400)
+
+        if session.payment_status != 'paid':
+            return Response({'detail': 'Payment not completed'}, status=400)
+
+        if session.id != fee.stripe_session_id:
+            return Response({'detail': 'Session mismatch'}, status=400)
+
+        # Mark as paid and generate a simple receipt id
+        fee.status = 'Paid'
+        fee.paid_date = timezone.now()
+        fee.receipt_id = f"RCPT-{fee.id}-{int(timezone.now().timestamp())}"
+        fee.save()
+
+        return Response(MembershipFeeSerializer(fee, context={'request': request}).data)

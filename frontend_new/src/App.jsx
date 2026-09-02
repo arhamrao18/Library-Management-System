@@ -10,14 +10,17 @@ import Borrowed from './pages/Borrowed.jsx'
 import Returns from './pages/Returns.jsx'
 import Layout from './components/Layout.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
+import Fees from './pages/Fees.jsx'
+
 
 import MemberLogin from './pages/member/MemberLogin.jsx'
 import MemberBooks from './pages/member/MemberBooks.jsx'
 import MemberRequests from './pages/member/MemberRequests.jsx'
 import MemberProfile from './pages/member/MemberProfile.jsx'
+import MemberFees from './pages/member/MemberFees.jsx'
 import MemberLayout from './components/MemberLayout.jsx'
 import MemberProtectedRoute from './components/MemberProtectedRoute.jsx'
-import Fees from './pages/Fees.jsx'
+
 export default function App() {
   return (
     <Routes>
@@ -44,6 +47,7 @@ export default function App() {
         <Route path="books" element={<MemberBooks />} />
         <Route path="requests" element={<MemberRequests />} />
         <Route path="profile" element={<MemberProfile />} />
+        <Route path="fees" element={<MemberFees />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

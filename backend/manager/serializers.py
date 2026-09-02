@@ -56,10 +56,11 @@ class MemberSerializer(serializers.ModelSerializer):
         return new_member
 '''Borrowed Serializer'''
 class BorrowedSerializer(serializers.ModelSerializer):
+    is_overdue = serializers.ReadOnlyField()
+
     class Meta:
         model = Borrowed
         fields = '__all__'
-    
 
 
 class MembershipFeeSerializer(serializers.ModelSerializer):

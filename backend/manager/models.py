@@ -25,6 +25,13 @@ class member(models.Model):
     image=models.ImageField(upload_to='image')
     def __str__(self):
         return self.Name
+    
+
+    
+BORROW_PERIOD_DAYS = 15   # how many days a member can keep a book before it's due
+BOOK_FINE_PER_DAY = 10    # Rs. per day late, for overdue books
+
+
 class Borrowed(models.Model):
     b_id=models.AutoField(primary_key=True)
     i_id=models.IntegerField(max_length=20,default=0)
@@ -34,8 +41,22 @@ class Borrowed(models.Model):
     Address=models.CharField(max_length=200)
     Book=models.CharField(max_length=50,default='')
     Status=models.CharField(max_length=20,default='pending')
+
+    # New fields for the due-date/fine system
+    borrow_date = models.DateField(null=True, blank=True)
+    due_date = models.DateField(null=True, blank=True)
+    return_date = models.DateField(null=True, blank=True)
+    fine_amount = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+
     def __str__(self):
         return self.Name
+
+    @property
+    def is_overdue(self):
+        # Only counts as overdue while the book is still out (Approved) and past due_date
+        if self.Status == 'Approved' and self.due_date:
+            return timezone.now().date() > self.due_date
+        return False
 
 
 

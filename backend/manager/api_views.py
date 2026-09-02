@@ -1,11 +1,14 @@
-from rest_framework import viewsets, APIView
-from .models import Login, member, Save, Borrowed, MembershipFee
+from rest_framework import viewsets
+from rest_framework.views import APIView
+from .models import Login, member, Save, Borrowed, MembershipFee, BORROW_PERIOD_DAYS, BOOK_FINE_PER_DAY
 from .serializers import LoginSerializer, MemberSerializer, SaveSerializer, BorrowedSerializer, MembershipFeeSerializer
 from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from django.core.management import call_command
+from django.utils import timezone
+from datetime import timedelta
 
 class BookViewSet(viewsets.ModelViewSet):
     serializer_class = SaveSerializer
@@ -52,6 +55,9 @@ class BorrowedViewSet(viewsets.ModelViewSet):
     def approve(self, request, pk=None):
         borrow = self.get_object()
         borrow.Status = 'Approved'
+        # Set the borrow date to today, and the due date N days from now
+        borrow.borrow_date = timezone.now().date()
+        borrow.due_date = borrow.borrow_date + timedelta(days=BORROW_PERIOD_DAYS)
         borrow.save()
         book = Save.objects.get(id=borrow.book_id)
         book.Quantity -= 1
@@ -64,12 +70,19 @@ class BorrowedViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['patch'])
     def approve_return(self, request, pk=None):
         borrow = self.get_object()
+        borrow.return_date = timezone.now().date()
+
+        # If returned after the due date, calculate a late fine
+        if borrow.due_date and borrow.return_date > borrow.due_date:
+            days_late = (borrow.return_date - borrow.due_date).days
+            borrow.fine_amount = days_late * BOOK_FINE_PER_DAY
+
         borrow.Status = 'Returned'
         borrow.save()
         book = Save.objects.get(id=borrow.book_id)
         book.Quantity += 1
         book.save()
-        return Response({'message': 'Returned'})
+        return Response({'message': 'Returned', 'fine_amount': str(borrow.fine_amount)})
     
 class GenerateFeesView(APIView):
     """

@@ -42,6 +42,8 @@ export default function Borrowed() {
               <th>Member</th>
               <th>Email</th>
               <th>Book</th>
+              <th>Borrowed On</th>
+              <th>Due Date</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -52,7 +54,15 @@ export default function Borrowed() {
                 <td>{r.Name}</td>
                 <td>{r.Email}</td>
                 <td>{r.Book}</td>
-                <td><span className="pill approved">{r.Status}</span></td>
+                <td>{r.borrow_date || '-'}</td>
+                <td>{r.due_date || '-'}</td>
+                <td>
+                  {r.is_overdue ? (
+                    <span className="pill" style={{ background: '#fee2e2', color: '#b91c1c' }}>Overdue</span>
+                  ) : (
+                    <span className="pill approved">{r.Status}</span>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

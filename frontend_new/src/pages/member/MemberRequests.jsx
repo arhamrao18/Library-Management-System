@@ -30,6 +30,19 @@ export default function MemberRequests() {
               <p className="title">{i.title}</p>
               <p className="meta">{i.Author} · {i.Category}</p>
               <span className="qty-pill">{i.Status}</span>
+
+              {/* Show due date once the book has been approved/handed over */}
+              {i.Status === 'Approved' && i.due_date && (
+                <p style={{ fontSize: '0.85rem', marginTop: 6 }}>
+                  Due by: <strong>{i.due_date}</strong>
+                  {i.is_overdue && (
+                    <span style={{ color: '#b91c1c', marginLeft: 6 }}>
+                      (Overdue — fine may apply)
+                    </span>
+                  )}
+                </p>
+              )}
+
               <div style={{ marginTop: 10 }}>
                 {i.Status === 'Approved' && <button className="btn btn-small" onClick={() => returnBook(i.book_id)}>Return</button>}
                 {i.Status === 'pending' && <button className="btn btn-danger btn-small" onClick={() => cancel(i.book_id)}>Cancel Request</button>}

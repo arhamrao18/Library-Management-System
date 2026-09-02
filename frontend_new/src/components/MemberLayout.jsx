@@ -27,6 +27,7 @@ export default function MemberLayout() {
         <NavLink to="/member/books" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.books} />Books</NavLink>
         <NavLink to="/member/requests" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.inbox} />My Requests</NavLink>
         <NavLink to="/member/profile" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.profile} />Profile</NavLink>
+        <NavLink to="/member/fees" className={({isActive}) => 'nav-link' + (isActive ? ' active' : '')}><Icon d={icons.inbox} />My Fees</NavLink>
         <button className="logout-btn" onClick={handleLogout}><Icon d={icons.logout} />Logout</button>
       </aside>
       <main className="content"><Outlet /></main>

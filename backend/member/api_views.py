@@ -67,7 +67,6 @@ class MemberBorrowView(APIView):
         return Response({'detail': 'Request submitted'})
 
 '''  Request.html  '''
-
 class MemberRequestsView(APIView):
     authentication_classes = [MemberJWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -86,9 +85,11 @@ class MemberRequestsView(APIView):
                 'Description': book.Description,
                 'image': request.build_absolute_uri(book.image.url) if book.image else None,
                 'Status': b.Status,
+                'due_date': b.due_date,
+                'is_overdue': b.is_overdue,
+                'fine_amount': str(b.fine_amount),
             })
         return Response(data)
-
 
 '''    Cancel button     '''
 
